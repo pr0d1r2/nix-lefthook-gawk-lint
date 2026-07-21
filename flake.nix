@@ -57,7 +57,7 @@
         in
         set-and-setting.lib.mkDevShells {
           inherit pkgs;
-          basePackages = mat.packages;
+          basePackages = mat.packages ++ [ self.packages.${sys}.default ];
           settingHook = ''
             ${self.packages.${sys}.setting}/bin/sync-setting .
             _assemble_out="$(mktemp -d)"
@@ -86,42 +86,48 @@
         }
       );
 
-      apps = forAllSystems (pkgs: {
-        confirm = {
-          type = "app";
-          program = "${
-            pkgs.writeShellApplication {
-              name = "confirm";
-              runtimeInputs = [
-                pkgs.coreutils
-                pkgs.diffutils
-                pkgs.findutils
-                pkgs.gawk
-                pkgs.git
-                pkgs.gnugrep
-              ];
-              text =
-                builtins.replaceStrings
-                  [
-                    "@FRAGMENTS_DIR@"
-                    "@ASSEMBLE_SCRIPT@"
-                    "@DETECT_SCRIPT@"
-                    "@SETTING_SRC@"
-                    "@CONFIRM_SCRIPT@"
-                    "@CONFIRM_REV@"
-                  ]
-                  [
-                    "${set-and-setting}/setting/integrations/lefthook"
-                    "${set-and-setting}/setting/lib/assemble-lefthook.sh"
-                    "${set-and-setting}/setting/lib/detect-fragments.sh"
-                    "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}"
-                    "${set-and-setting}/lib/confirm.sh"
-                    "${set-and-setting.rev or "unknown"}"
-                  ]
-                  (builtins.readFile ./confirm-app.sh);
-            }
-          }/bin/confirm";
-        };
-      });
+      apps = forAllSystems (
+        pkgs:
+        let
+          mat = set-and-setting.lib.materializationFor { inherit pkgs fragments; };
+          sys = pkgs.stdenv.hostPlatform.system;
+        in
+        {
+          confirm = {
+            type = "app";
+            program = "${
+              pkgs.writeShellApplication {
+                name = "confirm";
+                runtimeInputs =
+                  mat.packages
+                  ++ [ self.packages.${sys}.default ]
+                  ++ [
+                    pkgs.diffutils
+                    pkgs.findutils
+                  ];
+                text =
+                  builtins.replaceStrings
+                    [
+                      "@FRAGMENTS_DIR@"
+                      "@ASSEMBLE_SCRIPT@"
+                      "@DETECT_SCRIPT@"
+                      "@SETTING_SRC@"
+                      "@CONFIRM_SCRIPT@"
+                      "@CONFIRM_REV@"
+                    ]
+                    [
+                      "${set-and-setting}/setting/integrations/lefthook"
+                      "${set-and-setting}/setting/lib/assemble-lefthook.sh"
+                      "${set-and-setting}/setting/lib/detect-fragments.sh"
+                      "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}"
+                      "${set-and-setting}/lib/confirm.sh"
+                      "${set-and-setting.rev or "unknown"}"
+                    ]
+                    (builtins.readFile ./confirm-app.sh);
+              }
+            }/bin/confirm";
+          };
+        }
+      );
     };
 }
