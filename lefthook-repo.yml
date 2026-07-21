@@ -1,0 +1,15 @@
+# Repo-local checks carried through from vendored lefthook.yml (#126).
+---
+
+pre-commit:
+  commands:
+    gawk-lint:
+      glob: "*.awk"
+      run: timeout ${LEFTHOOK_GAWK_LINT_TIMEOUT:-30} lefthook-gawk-lint {staged_files}
+
+
+pre-push:
+  commands:
+    gawk-lint:
+      glob: "*.awk"
+      run: timeout ${LEFTHOOK_GAWK_LINT_TIMEOUT:-30} lefthook-gawk-lint {push_files}
