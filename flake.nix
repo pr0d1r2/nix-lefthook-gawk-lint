@@ -46,12 +46,6 @@
           runtimeInputs = [ pkgs.gawk ];
           text = builtins.readFile ./lefthook-gawk-lint.sh;
         };
-          default = pkgs.mkShell {
-            packages = ciCommon;
-            shellHook = builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (
-              builtins.readFile ./dev.sh
-            );
-          };
         setting = (set-and-setting.lib.mkSetting { inherit pkgs; }).materialized;
       });
 
@@ -106,15 +100,25 @@
                 pkgs.git
                 pkgs.gnugrep
               ];
-              text = ''
-                export FRAGMENTS_DIR="${set-and-setting}/setting/integrations/lefthook"
-                export ASSEMBLE_SCRIPT="${set-and-setting}/setting/lib/assemble-lefthook.sh"
-                export DETECT_SCRIPT="${set-and-setting}/setting/lib/detect-fragments.sh"
-                export SETTING_SRC="${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}"
-                export CONFIRM_SCRIPT="${set-and-setting}/lib/confirm.sh"
-                export CONFIRM_REV="${set-and-setting.rev or "unknown"}"
-                bash "$CONFIRM_SCRIPT"
-              '';
+              text =
+                builtins.replaceStrings
+                  [
+                    "@FRAGMENTS_DIR@"
+                    "@ASSEMBLE_SCRIPT@"
+                    "@DETECT_SCRIPT@"
+                    "@SETTING_SRC@"
+                    "@CONFIRM_SCRIPT@"
+                    "@CONFIRM_REV@"
+                  ]
+                  [
+                    "${set-and-setting}/setting/integrations/lefthook"
+                    "${set-and-setting}/setting/lib/assemble-lefthook.sh"
+                    "${set-and-setting}/setting/lib/detect-fragments.sh"
+                    "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}"
+                    "${set-and-setting}/lib/confirm.sh"
+                    "${set-and-setting.rev or "unknown"}"
+                  ]
+                  (builtins.readFile ./confirm-app.sh);
             }
           }/bin/confirm";
         };
