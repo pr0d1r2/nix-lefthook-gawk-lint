@@ -56,7 +56,10 @@
           sys = pkgs.stdenv.hostPlatform.system;
           shells = set-and-setting.lib.mkDevShells {
             inherit pkgs;
-            basePackages = mat.packages ++ [ self.packages.${sys}.default ];
+            basePackages = mat.packages ++ [
+              self.packages.${sys}.default
+              pkgs.bats
+            ];
             settingHook = ''
               ${self.packages.${sys}.setting}/bin/sync-setting .
               _assemble_out="$(mktemp -d)"
