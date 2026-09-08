@@ -68,6 +68,7 @@
               batsWithLibraries
             ];
             settingHook = ''
+              declare -x BATS_LIB_PATH="${batsWithLibraries}/share/bats"
               ${self.packages.${sys}.setting}/bin/sync-setting .
               _assemble_out="$(mktemp -d)"
               FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
