@@ -11,6 +11,8 @@
     nixpkgs.follows = "nixpkgs-lock/nixpkgs";
 
     set-and-setting.follows = "nixpkgs-lock/set-and-setting";
+    nix-lefthook-tdd-order-bats-src.url = "github:pr0d1r2/nix-lefthook-tdd-order-bats";
+    nix-lefthook-tdd-order-bats-src.flake = false;
   };
 
   outputs =
@@ -18,6 +20,7 @@
       self,
       nixpkgs,
       set-and-setting,
+      nix-lefthook-tdd-order-bats-src,
       ...
     }:
     let
@@ -54,21 +57,50 @@
         let
           mat = set-and-setting.lib.materializationFor { inherit pkgs fragments; };
           sys = pkgs.stdenv.hostPlatform.system;
+          batsWithLibraries = pkgs.bats.withLibraries (
+            libraries: with libraries; [
+              bats-support
+              bats-assert
+              bats-file
+            ]
+          );
+          tddOrderBats = pkgs.writeShellApplication {
+            name = "lefthook-tdd-order-bats";
+            runtimeInputs = [
+              pkgs.coreutils
+              pkgs.findutils
+              pkgs.git
+            ];
+            text =
+              builtins.replaceStrings
+                [ "@IS_EXCLUDED_PATH@" "@SPEC_PATH_FOR_FILE@" ]
+                [
+                  "${nix-lefthook-tdd-order-bats-src}/is-excluded-path.sh"
+                  "${nix-lefthook-tdd-order-bats-src}/spec-path-for-file.sh"
+                ]
+                (builtins.readFile "${nix-lefthook-tdd-order-bats-src}/lefthook-tdd-order-bats.sh");
+          };
+          shells = set-and-setting.lib.mkDevShells {
+            inherit pkgs;
+            basePackages = mat.packages ++ [
+              tddOrderBats
+              self.packages.${sys}.default
+              batsWithLibraries
+            ];
+            settingHook = ''
+              declare -x BATS_LIB_PATH="${batsWithLibraries}/share/bats"
+              ${self.packages.${sys}.setting}/bin/sync-setting .
+              _assemble_out="$(mktemp -d)"
+              FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
+                out="$_assemble_out" \
+                FRAGMENTS_DIR="${set-and-setting}/setting/integrations/lefthook" \
+                bash "${set-and-setting}/setting/lib/assemble-lefthook.sh"
+              cp -f "$_assemble_out/lefthook.yml" lefthook.yml
+              rm -rf "$_assemble_out"
+            '';
+          };
         in
-        set-and-setting.lib.mkDevShells {
-          inherit pkgs;
-          basePackages = mat.packages ++ [ self.packages.${sys}.default ];
-          settingHook = ''
-            ${self.packages.${sys}.setting}/bin/sync-setting .
-            _assemble_out="$(mktemp -d)"
-            FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
-              out="$_assemble_out" \
-              FRAGMENTS_DIR="${set-and-setting}/setting/integrations/lefthook" \
-              bash "${set-and-setting}/setting/lib/assemble-lefthook.sh"
-            cp -f "$_assemble_out/lefthook.yml" lefthook.yml
-            rm -rf "$_assemble_out"
-          '';
-        }
+        shells // { ci = shells.default; }
       );
 
       checks = forAllSystems (
