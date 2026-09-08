@@ -66,12 +66,19 @@
           );
           tddOrderBats = pkgs.writeShellApplication {
             name = "lefthook-tdd-order-bats";
-            runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.git ];
-            text = builtins.replaceStrings
-              [ "@IS_EXCLUDED_PATH@" "@SPEC_PATH_FOR_FILE@" ]
-              [ "${nix-lefthook-tdd-order-bats-src}/is-excluded-path.sh"
-                "${nix-lefthook-tdd-order-bats-src}/spec-path-for-file.sh" ]
-              (builtins.readFile "${nix-lefthook-tdd-order-bats-src}/lefthook-tdd-order-bats.sh");
+            runtimeInputs = [
+              pkgs.coreutils
+              pkgs.findutils
+              pkgs.git
+            ];
+            text =
+              builtins.replaceStrings
+                [ "@IS_EXCLUDED_PATH@" "@SPEC_PATH_FOR_FILE@" ]
+                [
+                  "${nix-lefthook-tdd-order-bats-src}/is-excluded-path.sh"
+                  "${nix-lefthook-tdd-order-bats-src}/spec-path-for-file.sh"
+                ]
+                (builtins.readFile "${nix-lefthook-tdd-order-bats-src}/lefthook-tdd-order-bats.sh");
           };
           shells = set-and-setting.lib.mkDevShells {
             inherit pkgs;
