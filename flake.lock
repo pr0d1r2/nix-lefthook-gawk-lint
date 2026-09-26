@@ -1758,11 +1758,11 @@
     "nix-lefthook-tdd-order-bats-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1785309008,
-        "narHash": "sha256-g37iSZbsVzv7eg3I+aWUDekOseu5NlUpM9xBWB4s8yc=",
+        "lastModified": 1790436163,
+        "narHash": "sha256-pLIlJs/RGdiOj2+twY1Es7SNhwFMNJbJiLdkD3sX69g=",
         "owner": "pr0d1r2",
         "repo": "nix-lefthook-tdd-order-bats",
-        "rev": "9c1f614938ff40ad07285288098939869c2eb8e5",
+        "rev": "2de525ff1f140ce8ed5f7392ab7e912e1621815d",
         "type": "github"
       },
       "original": {
