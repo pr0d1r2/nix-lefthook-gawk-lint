@@ -1,5 +1,8 @@
 # nix-lefthook-gawk-lint
 
+<!-- no architecture diagram -->
+<!-- no development architecture diagram -->
+
 <!-- hallucinogen:autonomy-disclaimer start -->
 > Read [LLM-DISCLAIMER](docs/LLM-DISCLAIMER.md) first. This repository is
 > tended by an autonomous loop, and that file says what the loop may do here,
