@@ -45,9 +45,11 @@
             inherit pkgs;
             fragments = [
               "base"
+              "actions"
               "nix"
               "shell"
               "ascii"
+              "bats"
               "markdown"
               "yaml"
             ];
@@ -90,9 +92,11 @@
               FRAGMENTS="${
                 builtins.concatStringsSep " " [
                   "base"
+                  "actions"
                   "nix"
                   "shell"
                   "ascii"
+                  "bats"
                   "markdown"
                   "yaml"
                 ]
@@ -125,9 +129,11 @@
           inherit pkgs;
           fragments = [
             "base"
+            "actions"
             "nix"
             "shell"
             "ascii"
+            "bats"
             "markdown"
             "yaml"
           ];
@@ -158,9 +164,11 @@
             inherit pkgs;
             fragments = [
               "base"
+              "actions"
               "nix"
               "shell"
               "ascii"
+              "bats"
               "markdown"
               "yaml"
             ];
