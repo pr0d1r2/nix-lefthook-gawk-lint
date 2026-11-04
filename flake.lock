@@ -531,11 +531,11 @@
     "nix-lefthook-tdd-order-bats-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1793710938,
-        "narHash": "sha256-Fucc93W0r36HcF2Tf8tl4yaPVUttDE/YY6m1t28/ARo=",
+        "lastModified": 1793722868,
+        "narHash": "sha256-FCf4KSMChWDt0V2Rt7J3PZ67Ubbs5a+B+mTWhOdvMqs=",
         "owner": "pr0d1r2",
         "repo": "nix-lefthook-tdd-order-bats",
-        "rev": "4f01b000f7dcfe35a823ffc351a091d93c5f0960",
+        "rev": "72b1b409da58e36b03be3c661e2291cdd1445e41",
         "type": "github"
       },
       "original": {
